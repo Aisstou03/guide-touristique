@@ -1,4 +1,4 @@
-package uasz.gestion.guidetouristique;
+package zig.gestion.guide_touristique;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
