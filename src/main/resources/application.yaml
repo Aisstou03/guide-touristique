@@ -1,4 +1,18 @@
 
+
+spring:
+  application:
+    name: guide_touristique
+  datasource:
+    url: jdbc:h2:mem:guide_touristiquebd
+  h2:
+    console:
+      enabled: true 
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  
 openapi: 3.1.0
 
 info:

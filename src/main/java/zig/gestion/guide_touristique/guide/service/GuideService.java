@@ -1,9 +1,14 @@
 package zig.gestion.guide_touristique.guide.service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import zig.gestion.guide_touristique.common.error.ConflitException;
 import zig.gestion.guide_touristique.common.error.RessourceIntrouvableException;
+import zig.gestion.guide_touristique.cv.repository.CvRepository;
 import zig.gestion.guide_touristique.guide.StatutGuide;
 import zig.gestion.guide_touristique.guide.dto.GuideCreation;
 import zig.gestion.guide_touristique.guide.dto.GuideDto;
@@ -11,20 +16,19 @@ import zig.gestion.guide_touristique.guide.dto.GuideModification;
 import zig.gestion.guide_touristique.guide.entity.Guide;
 import zig.gestion.guide_touristique.guide.mapper.GuideMapper;
 import zig.gestion.guide_touristique.guide.repository.GuideRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-
 import zig.gestion.guide_touristique.guide.repository.GuideSpecifications;
+
 @Service
 @Transactional(readOnly = true)   // par défaut : lecture seule
-
 public class GuideService {
+
     private final GuideRepository guideRepository;
+    private final CvRepository cvRepository;
     private final GuideMapper guideMapper;
 
-    public GuideService(GuideRepository guideRepository, GuideMapper guideMapper) {
+    public GuideService(GuideRepository guideRepository, CvRepository cvRepository, GuideMapper guideMapper) {
         this.guideRepository = guideRepository;
+        this.cvRepository = cvRepository;
         this.guideMapper = guideMapper;
     }
 
@@ -38,13 +42,14 @@ public class GuideService {
         return guideMapper.toDto(guideRepository.save(guide));
     }
 
-    public Page<GuideDto> rechercher(String nom, String region, StatutGuide statut, int page, int taille) {
-    // Tri fixe : sans lui, deux pages successives pourraient se chevaucher
-    PageRequest pageable = PageRequest.of(page, taille, Sort.by("nom", "prenom", "id"));
-    return guideRepository
-            .findAll(GuideSpecifications.recherche(nom, region, statut), pageable)
-            .map(guideMapper::toDto);
-}
+    public Page<GuideDto> rechercher(String nom, String langue, String region, StatutGuide statut,
+                                     int page, int taille) {
+        // Tri fixe : sans lui, deux pages successives pourraient se chevaucher
+        PageRequest pageable = PageRequest.of(page, taille, Sort.by("nom", "prenom", "id"));
+        return guideRepository
+                .findAll(GuideSpecifications.recherche(nom, langue, region, statut), pageable)
+                .map(guideMapper::toDto);
+    }
 
     public GuideDto consulter(Long id) {
         return guideMapper.toDto(trouver(id));
@@ -66,6 +71,7 @@ public class GuideService {
         if (guide.getStatut() != StatutGuide.BROUILLON) {
             throw new ConflitException("Le profil ne peut plus être supprimé : le dossier est soumis.");
         }
+        cvRepository.deleteByGuideId(id);   // d'abord le CV, ensuite le guide
         guideRepository.delete(guide);
     }
 

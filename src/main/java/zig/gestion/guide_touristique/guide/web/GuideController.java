@@ -49,12 +49,13 @@ public class GuideController {
     @GetMapping
     public ResponseEntity<List<GuideDto>> rechercher(
             @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String langue,
             @RequestParam(required = false) String region,
             @RequestParam(required = false) StatutGuide statut,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int taille) {
 
-        Page<GuideDto> resultat = guideService.rechercher(nom, region, statut, page, taille);
+        Page<GuideDto> resultat = guideService.rechercher(nom, langue, region, statut, page, taille);
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(resultat.getTotalElements()))
                 .body(resultat.getContent());
