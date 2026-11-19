@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 
 @RestControllerAdvice
 public class GestionnaireErreursGlobal {
@@ -36,6 +38,16 @@ public class GestionnaireErreursGlobal {
     @ExceptionHandler(RequeteInvalideException.class)
     ResponseEntity<Erreur> requeteInvalide(RequeteInvalideException ex) {
         return reponse(HttpStatus.BAD_REQUEST, "REQUETE_INVALIDE", ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ResponseEntity<Erreur> nonAutorise(AuthenticationException ex) {
+        return reponse(HttpStatus.UNAUTHORIZED, "NON_AUTORISE", "Une authentification valide est requise.", null);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<Erreur> accesRefuse(AccessDeniedException ex) {
+        return reponse(HttpStatus.FORBIDDEN, "ACCES_REFUSE", ex.getMessage(), null);
     }
 
     // --- Erreurs de validation (400) ---

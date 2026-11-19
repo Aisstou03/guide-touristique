@@ -1,13 +1,14 @@
-
-
 spring:
   application:
     name: guide_touristique
   datasource:
-    url: jdbc:h2:mem:guide_touristiquebd
+    url: "jdbc:h2:file:/Users/mac/Documents/Etudes/BU/guide_touristique/data/guide_touristique_nouvelle"
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
   h2:
     console:
-      enabled: true 
+      enabled: true
   jpa:
     show-sql: true
     hibernate:

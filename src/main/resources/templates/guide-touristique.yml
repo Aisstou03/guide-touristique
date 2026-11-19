@@ -401,6 +401,26 @@ paths:
         '404':
           $ref: '#/components/responses/RessourceIntrouvable'
 
+  /api/v1/candidatures/{candidatureId}/resultats/publication:
+    parameters:
+      - $ref: '#/components/parameters/CandidatureId'
+    post:
+      tags: [Evaluations]
+      operationId: publierResultatEvaluation
+      summary: Publier le résultat de l'examen
+      description: Opération réservée à un administrateur habilité.
+      responses:
+        '200':
+          description: Résultat publié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultatEvaluation'
+        '404':
+          $ref: '#/components/responses/RessourceIntrouvable'
+        '409':
+          $ref: '#/components/responses/Conflit'
+
 components:
 
   parameters:
